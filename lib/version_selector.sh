@@ -8,13 +8,13 @@ source "$SCRIPT_DIR/log_step.sh"
 # Fetch available LanguageTool snapshot versions
 fetch_versions() {
     local versions
-    log_info "Fetching available LanguageTool versions..."
-    versions=$(curl -s "https://internal1.languagetool.org/snapshots/" | \
-               grep -oP 'LanguageTool-\K[0-9]{8}(?=-snapshot\.zip)' | \
-               grep -v 'wikipedia\|predeploy' | \
-               sort -r | \
-               uniq | \
-               head -20)
+    log_info "Fetching available LanguageTool versions..." >&2
+    versions=$(curl -s "https://internal1.languagetool.org/snapshots/" |
+        grep -oP 'LanguageTool-\K[0-9]{8}(?=-snapshot\.zip)' |
+        grep -v 'wikipedia\|predeploy' |
+        sort -r |
+        uniq |
+        head -20)
 
     if [[ -z "$versions" ]]; then
         echo "latest"
@@ -55,15 +55,26 @@ select_version_dialog_like() {
 
     # Build menu items array (tag description pairs)
     for ver in "${versions[@]}"; do
-        menu_items+=("Snapshot $ver")
+        menu_items+=("$ver" "Snapshot $ver")
     done
 
     # Use dialog/whiptail menu (redirect stderr to stdout for capture)
-    version=$("$tool" --title "LanguageTool Version Selection" \
-                      --menu "Select a LanguageTool snapshot version:" \
-                      20 60 15 \
-                      "${menu_items[@]}" \
-                      3>&1 1>&2 2>&3)
+    # Use dialog/whiptail menu (redirect stderr to stdout for capture)
+    if [[ "$tool" == "whiptail" ]]; then
+        version=$("$tool" --title "LanguageTool Version Selection" \
+            --notags \
+            --menu "Select a LanguageTool snapshot version:" \
+            20 30 15 \
+            "${menu_items[@]}" \
+            3>&1 1>&2 2>&3)
+    else
+        version=$("$tool" --title "LanguageTool Version Selection" \
+            --noitem \
+            --menu "Select a LanguageTool snapshot version:" \
+            20 30 15 \
+            "${menu_items[@]}" \
+            3>&1 1>&2 2>&3)
+    fi
 
     # Handle user cancellation or selection
     if [[ $? -eq 0 && -n "$version" ]]; then
@@ -92,7 +103,7 @@ select_version_select() {
     fi
 
     log_info "Select a LanguageTool snapshot version:" >&2
-    versions+=("latest")  # Add 'latest' option
+    versions+=("latest") # Add 'latest' option
 
     PS3="Enter selection number (or press Ctrl+C to use latest): "
     select version in "${versions[@]}"; do
@@ -113,14 +124,14 @@ set_version_gui() {
     ui_tool=$(detect_ui_tool)
 
     case "$ui_tool" in
-        whiptail|dialog)
-            lt_ver=$(select_version_dialog_like "$ui_tool")
-            "$ui_tool" --msgbox "Using LanguageTool version: $lt_ver" 8 50
-            clear
-            ;;
-        select)
-            lt_ver=$(select_version_select)
-            ;;
+    whiptail | dialog)
+        lt_ver=$(select_version_dialog_like "$ui_tool")
+        "$ui_tool" --msgbox "Using LanguageTool version: $lt_ver" 8 50
+        clear
+        ;;
+    select)
+        lt_ver=$(select_version_select)
+        ;;
     esac
 
     log_info "Using LanguageTool version: $lt_ver"

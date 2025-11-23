@@ -154,10 +154,10 @@ if [ -n "$LT_CLI_DIR" ]; then
     log_section "Complete"
 
     if [ "$LT_CLI_UPDATED" ]; then
-        log_success "Langtool-CLI updated successfully!"
+        log_success "Langtool-CLI updated successfully!\n"
     else
         log_success "Installation complete!"
-        log_info "Please restart your shell to access the CLI"
+        log_info "Please restart your shell to access the CLI\n"
     fi
 
 fi
