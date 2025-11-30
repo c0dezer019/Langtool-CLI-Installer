@@ -61,17 +61,17 @@ select_version_dialog_like() {
     # Use dialog/whiptail menu (redirect stderr to stdout for capture)
     # Use dialog/whiptail menu (redirect stderr to stdout for capture)
     if [[ "$tool" == "whiptail" ]]; then
-        version=$("$tool" --title "LanguageTool Version Selection" \
+        version=$("$tool" --title "LT Version Selection" \
             --notags \
-            --menu "Select a LanguageTool snapshot version:" \
-            20 30 15 \
+            --menu "Select a snapshot version:" \
+            20 30 12 \
             "${menu_items[@]}" \
             3>&1 1>&2 2>&3)
     else
-        version=$("$tool" --title "LanguageTool Version Selection" \
+        version=$("$tool" --title "LT Version Selection" \
             --noitem \
-            --menu "Select a LanguageTool snapshot version:" \
-            20 30 15 \
+            --menu "Select a snapshot version:" \
+            20 30 12 \
             "${menu_items[@]}" \
             3>&1 1>&2 2>&3)
     fi

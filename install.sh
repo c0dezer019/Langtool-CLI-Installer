@@ -66,15 +66,15 @@ if [ -z "$LT_INSTALL_DIR" ]; then
     if [ -n "$install_dir" ]; then
         export LT_INSTALL_DIR="$install_dir"
         update_shell_rc "LT_INSTALL_DIR" "$install_dir"
+        mkdir -p "$install_dir"
     else
         export LT_INSTALL_DIR="$HOME/.local/share/LanguageTool"
         update_shell_rc "LT_INSTALL_DIR" "$HOME/.local/share/LanguageTool"
+        mkdir -p "$install_dir"
     fi
     log_info "LanguageTool directory: $LT_INSTALL_DIR"
 else
-    log_step "Using pre-configured LanguageTool directory"
-    log_info "LanguageTool directory: $LT_INSTALL_DIR"
-    update_shell_rc "LT_INSTALL_DIR" "$LT_INSTALL_DIR"
+    mkdir -p "$LT_INSTALL_DIR"
 fi
 
 if [ -z "${LT_VER}" ]; then
