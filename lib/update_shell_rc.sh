@@ -40,7 +40,7 @@ update_shell_rc() {
     shell_name="$(basename "$shell_path")"
     shell_rc="$(determine_shell_rc)"
 
-    log_step "Updating shell rc: $shell_rc"
+    ui_log step "Updating shell rc: $shell_rc"
 
     mkdir -p "$(dirname "$shell_rc")"
     touch "$shell_rc"

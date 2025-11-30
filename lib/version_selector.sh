@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/log_step.sh"
 # Fetch available LanguageTool snapshot versions
 fetch_versions() {
     local versions
-    log_info "Fetching available LanguageTool versions..." >&2
+    ui_log info "Fetching available LanguageTool versions..." >&2
     versions=$(curl -s "https://internal1.languagetool.org/snapshots/" |
         grep -oP 'LanguageTool-\K[0-9]{8}(?=-snapshot\.zip)' |
         grep -v 'wikipedia\|predeploy' |
@@ -97,12 +97,12 @@ select_version_select() {
     done < <(fetch_versions)
 
     if [[ ${#versions[@]} -eq 0 ]]; then
-        log_warn "Failed to fetch versions. Using 'latest' as default."
+        ui_log warn "Failed to fetch versions. Using 'latest' as default."
         echo "latest"
         return
     fi
 
-    log_info "Select a LanguageTool snapshot version:" >&2
+    ui_log info "Select a LanguageTool snapshot version:" >&2
     versions+=("latest") # Add 'latest' option
 
     PS3="Enter selection number (or press Ctrl+C to use latest): "
@@ -111,7 +111,7 @@ select_version_select() {
             echo "$version"
             break
         else
-            log_warn "Invalid selection. Please try again."
+            ui_log warn "Invalid selection. Please try again."
         fi
     done
 }
@@ -134,7 +134,7 @@ set_version_gui() {
         ;;
     esac
 
-    log_info "Using LanguageTool version: $lt_ver"
+    ui_log info "Using LanguageTool version: $lt_ver"
     export LT_VER="$lt_ver"
     update_shell_rc "LT_VER" "$lt_ver"
 }
