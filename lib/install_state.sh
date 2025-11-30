@@ -70,3 +70,20 @@ clear_state() {
 state_exists() {
     [ -f "$STATE_FILE" ]
 }
+
+# Get a single state value (alias for load_state, for Python clarity)
+get_state_value() {
+    load_state "$1"
+}
+
+# List all state keys
+list_state_keys() {
+    if [ -f "$STATE_FILE" ]; then
+        cut -d= -f1 "$STATE_FILE" 2>/dev/null | grep -v '^#' | grep -v '^$'
+    fi
+}
+
+# Print state file path (for Python to access)
+get_state_file_path() {
+    echo "$STATE_FILE"
+}

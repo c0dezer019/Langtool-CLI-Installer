@@ -12,6 +12,18 @@ source "$SCRIPT_DIR/log_step.sh"
 # UI backend (yad, tui, or cli)
 UI_BACKEND="${UI_BACKEND:-auto}"
 
+# Validate GTK backend availability (Python + PyGObject)
+validate_gtk_backend() {
+    # Prefer system Python for GTK bindings (Homebrew/custom Python may not have gi module)
+    local python_cmd="/usr/bin/python3"
+    [ -x "$python_cmd" ] || python_cmd="python3"
+
+    command -v "$python_cmd" &>/dev/null || return 1
+    [ -n "$DISPLAY" ] || return 1
+    "$python_cmd" -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk" 2>/dev/null || return 1
+    return 0
+}
+
 # Validate YAD backend availability
 validate_yad_backend() {
     command -v yad &>/dev/null || return 1
@@ -40,9 +52,9 @@ detect_ui_backend() {
         return
     fi
 
-    # Auto-detect priority: YAD > TUI > CLI
-    if validate_yad_backend; then
-        echo "yad"
+    # Auto-detect priority: GTK > TUI > CLI
+    if validate_gtk_backend; then
+        echo "gtk"
     elif validate_tui_backend; then
         echo "tui"
     else
@@ -55,9 +67,9 @@ source_backend() {
     local backend="$1"
 
     case "$backend" in
-        yad)
+        gtk)
             # shellcheck disable=SC1091
-            source "$SCRIPT_DIR/ui_yad.sh"
+            source "$SCRIPT_DIR/ui_gtk.sh"
             ;;
         tui)
             # shellcheck disable=SC1091
@@ -69,7 +81,7 @@ source_backend() {
             ;;
         *)
             echo "Error: Invalid UI backend: $backend" >&2
-            echo "Valid backends: yad, tui, cli" >&2
+            echo "Valid backends: gtk, tui, cli" >&2
             exit 1
             ;;
     esac
@@ -88,9 +100,9 @@ ui_init() {
 
     # Validate requested backend and fallback if needed
     case "$detected_backend" in
-        yad)
-            if ! validate_yad_backend; then
-                log_warn "YAD requested but unavailable, falling back to TUI"
+        gtk)
+            if ! validate_gtk_backend; then
+                log_warn "GTK requested but unavailable, falling back to TUI"
                 detected_backend="tui"
             fi
             ;;

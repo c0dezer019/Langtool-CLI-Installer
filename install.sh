@@ -84,27 +84,34 @@ if ! command -v git 1>/dev/null 2>&1; then
 fi
 ui_log success "Git found"
 
+# Auto-detect SSH availability and authentication
+USE_SSH_AUTO=""
 if [ -n "${USE_SSH}" ]; then
-    ui_log step "Checking for ssh"
-    if ! command -v ssh 1>/dev/null 2>&1; then
-        ui_log error "SSH is not installed and cannot continue."
-        exit 1
-    fi
+    # USE_SSH explicitly set, respect user preference
+    USE_SSH_AUTO="${USE_SSH}"
+    ui_log info "SSH mode explicitly enabled via USE_SSH variable"
+else
+    # Auto-detect: try SSH if available
+    ui_log step "Detecting SSH availability"
+    if command -v ssh 1>/dev/null 2>&1; then
+        ui_log info "SSH command found, testing GitHub authentication..."
 
-    ssh -T git@github.com 1>/dev/null 2>&1 || EXIT_CODE=$?
-    if [[ ${EXIT_CODE} != 1 ]]; then
-        ui_log error "GitHub SSH authentication failed."
-        ui_log info "You need to have an SSH key set up to use SSH mode."
-        ui_log dim "Generate a key: ssh-keygen"
-        ui_log dim "For help: https://docs.github.com/en/repositories/creating-and-managing-repositories/troubleshooting-cloning-errors#check-your-ssh-access"
-        exit 1
+        ssh -T git@github.com 1>/dev/null 2>&1 || EXIT_CODE=$?
+        if [[ ${EXIT_CODE} == 1 ]]; then
+            USE_SSH_AUTO="1"
+            ui_log success "SSH authentication verified, using SSH for git operations"
+        else
+            ui_log warn "SSH available but GitHub authentication failed, falling back to HTTPS"
+            ui_log dim "To use SSH: set up SSH keys (ssh-keygen) and add to GitHub"
+        fi
+    else
+        ui_log info "SSH not available, using HTTPS for git operations"
     fi
-    ui_log success "SSH authentication verified"
 fi
 
 ui_log section "Installation"
 
-if [ -n "${USE_SSH}" ]; then
+if [ -n "${USE_SSH_AUTO}" ]; then
     GITHUB="git@github.com"
 else
     GITHUB="https://github.com/"
