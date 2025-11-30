@@ -145,8 +145,8 @@ if [ -n "$LT_CLI_DIR" ]; then
         fi
     fi
 
-    ln -sf "$LT_CLI_DIR/lib/langtool" "$LT_CLI_DIR/bin/langtool"
-    ln -sf "$LT_CLI_DIR/lib/uninstall" "$LT_CLI_DIR/bin/uninstall"
+    ln -sf "$LT_CLI_DIR/langtool" "$LT_CLI_DIR/bin/langtool"
+    ln -sf "$LT_CLI_DIR/lib/uninstall.sh" "$LT_CLI_DIR/bin/uninstall"
 
     update_shell_rc "PATH" "$LT_CLI_DIR/bin" prepend_path
     log_success "Symlinks created in $lt_cli_bin"
