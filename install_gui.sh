@@ -59,8 +59,8 @@ show_welcome_step() {
         --field="<b>SSH</b>:LBL" "$ssh_status" \
         --field="":LBL "" \
         --field="<i>Click Next to continue or Cancel to exit.</i>:LBL" "" \
-        --button="gtk-cancel:1" \
-        --button="gtk-go-forward:0" \
+        --button="Cancel!gtk-cancel:1" \
+        --button="Next!gtk-go-forward:0" \
         --width=600 \
         --height=300 \
         --center \
@@ -90,9 +90,9 @@ show_config_step() {
         --field="LanguageTool Directory:DIR" "$default_lt_dir" \
         --field="":LBL "" \
         --field="<i>Use default paths or browse to select custom locations.</i>:LBL" "" \
-        --button="gtk-go-back:2" \
-        --button="gtk-cancel:1" \
-        --button="gtk-go-forward:0" \
+        --button="Back!gtk-go-back:2" \
+        --button="Cancel!gtk-cancel:1" \
+        --button="Next!gtk-go-forward:0" \
         --width=650 \
         --height=280 \
         --center \
@@ -163,9 +163,9 @@ show_version_step() {
         --height=500 \
         --width=650 \
         --center \
-        --button="gtk-go-back:2" \
-        --button="gtk-cancel:1" \
-        --button="gtk-go-forward:0" \
+        --button="Back!gtk-go-back:2" \
+        --button="Cancel!gtk-cancel:1" \
+        --button="Next!gtk-go-forward:0" \
         "${list_items[@]}" \
         2>/dev/null)
 
@@ -214,8 +214,8 @@ show_confirmation_step() {
         --width=650 \
         --height=400 \
         --center \
-        --button="gtk-go-back:2" \
-        --button="gtk-cancel:1" \
+        --button="Back!gtk-go-back:2" \
+        --button="Cancel!gtk-cancel:1" \
         --button="Install!gtk-yes:0" \
         2>/dev/null
 
